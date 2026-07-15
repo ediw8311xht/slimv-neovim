@@ -325,6 +325,9 @@ if !exists( 'g:slimv_template_apropos' )
 endif
 
 
+if !exists( 'g:slimv_no_autogroup_repl' )
+  let g:slimv_no_autogroup_repl = 0
+endif
 " =====================================================================
 "  Other non-global script variables
 " =====================================================================
@@ -943,13 +946,16 @@ function! SlimvOpenReplBuffer()
     hi SlimvNormal term=none cterm=none gui=none
     hi SlimvCursor term=reverse cterm=reverse gui=reverse
 
+
     augroup SlimvReplAutoCmd
         au!
         " Add autocommands specific to the REPL buffer
+        if g:slimv_no_autogroup_repl == 1
+          execute "au BufEnter "         . g:slimv_repl_name . " :call SlimvReplEnter()"
+          execute "au BufLeave "         . g:slimv_repl_name . " :call SlimvReplLeave()"
+        endif
         execute "au FileChangedShell " . g:slimv_repl_name . " :call SlimvRefreshReplBuffer()"
         execute "au FocusGained "      . g:slimv_repl_name . " :call SlimvRefreshReplBuffer()"
-        execute "au BufEnter "         . g:slimv_repl_name . " :call SlimvReplEnter()"
-        execute "au BufLeave "         . g:slimv_repl_name . " :call SlimvReplLeave()"
         execute "au BufWinEnter "      . g:slimv_repl_name . " :call SlimvMarkBufferEnd(1)"
         execute "au TabEnter *"        . " :call SlimvReplSetCursorPos(1)"
     augroup END
